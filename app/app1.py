@@ -1,33 +1,34 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
 import joblib
+import pandas as pd
 
-# Load the trained Decision Tree model
-model = joblib.load("model/decision_tree_model.pkl")
+# Load the pipeline model
+model = joblib.load("model/diabetes_pipeline_model.pkl")
 
-# Set the title
-st.title("🩺 Diabetes Prediction Web App")
+st.title("🩺 Diabetes Prediction Web App (Pipeline Version)")
 
 # Input fields
 glucose = st.number_input("Glucose Level", min_value=0, max_value=300, value=120)
 bmi = st.number_input("BMI", min_value=0.0, max_value=60.0, value=25.0, format="%.2f")
 pregnancies = st.number_input("Number of Pregnancies", min_value=0, max_value=20, value=2)
+age = st.number_input("Age", min_value=10, max_value=100, value=35)
 
 # Predict Button
 if st.button("Predict Diabetes Risk"):
     try:
-        # Prepare input for model (match training feature order)
         input_data = pd.DataFrame({
             "Glucose": [glucose],
             "BMI": [bmi],
-            "Pregnancies": [pregnancies]
+            "Pregnancies": [pregnancies],
+            "Age": [age],
+            # Other one-hot encoded columns are handled inside the pipeline
+            # We do NOT manually add them here anymore!
         })
 
-        # Make prediction
+        # Predict using pipeline
         prediction = model.predict(input_data)[0]
-
         risk = "High" if prediction == 1 else "Low"
         st.success(f"🩸 Diabetes Risk: **{risk}**")
+
     except Exception as e:
-        st.error(f"❌ Error making prediction: {e}")
+        st.error(f"❌ Error: {e}")

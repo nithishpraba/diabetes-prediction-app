@@ -3,7 +3,11 @@ import joblib
 import pandas as pd
 
 # Load the pipeline model
-model = joblib.load("model/diabetes_pipeline_model.pkl")
+try:
+    model = joblib.load("model/diabetes_pipeline_model.pkl")
+except FileNotFoundError:
+    st.error("❌ Model file not found. Please check the file path.")
+    st.stop()
 
 st.title("🩺 Diabetes Prediction Web App (Pipeline Version)")
 
